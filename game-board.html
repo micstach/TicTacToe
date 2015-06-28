@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<head>
+
+    <title>Tic tac toe - game board</title>
+    <link rel="stylesheet" href="game-board.css">
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="game-board.js"></script>
+</head>
+
+<div id="game-layout">
+    <div id="game-board">
+        <div id='info'>
+            <span id='userGuid' style='display:none'></span>
+            <span id='stats' style='display:none'>
+                <span>Players count</span>
+                <span id='playersCount'></span>
+            </span>
+            <span style='display:none'>
+                <span>Time:</span>
+                <span id='timer'>5</span>
+                </span>
+                <span id='tools'>
+                    <span id='winner'></span>
+            </span>
+            <button id='replay'>Replay !</button>
+        </div>
+
+        <div class="row">
+            <div id="1x1" class="field"></div>
+            <div id="1x2" class="field"></div>
+            <div id="1x3" class="field"></div>
+        </div>
+        <div class="row">
+            <div id="2x1" class="field"></div>
+            <div id="2x2" class="field"></div>
+            <div id="2x3" class="field"></div>
+        </div>
+        <div class="row">
+            <div id="3x1" class="field"></div>
+            <div id="3x2" class="field"></div>
+            <div id="3x3" class="field"></div>
+        </div>
+    </div>
+</div>
+
+</html>

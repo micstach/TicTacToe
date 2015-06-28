@@ -1,0 +1,43 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- tbd----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- if two player finishes the game - resend players list to all connected players
+- size of gameboard on android devices
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- 31/05/2015 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+- [N] jesli ktos wyzwał mnie i wygrałem to dostaje "1" punkt, jesli ja kogos i ja wygrałem to "0.5"...milo by miec ogolną punktację.
+- [N] oczekiwanie na start, maksymalnie N-sekund, jesli brak wygrana dla wyzywanego gracza.
+- [P] losowanie kto zaczyna - slabszy przeciwnik jest faworyzowany
+- [P] limit czasu na wykonanie ruchu
+- [N] podajemy email do logowania.
+- [FIXED] problem na androidzie - nie wiem - juz wiem trzeba poprawnie ustawic url (IP/DNS) w:
+  connection = new WebSocket('ws://192.168.0.106:8080'); 
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- initial tasks - wielkanoc 2015 (!) --------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+1. logowanie - podajemy imię (email ?) i klikamy OK
+
+plik lokalnie na dysku
+
+{
+    "name": "Michał",
+    "registered": 12345678,
+    "winnings": 0,
+    "lost": 0,
+    "draws": 0
+}
+
+Po wykonaniu requestu logujacego, rozpoczynamy komunikacje przez websocket, widzimy na bierząco liste uzytkowników których mozemy wyzwać na pojedynek.
+
+wyzwanie przeciwnika powoduje pokazanie sie pytania czy przyjmujesz wyzwanie, mozliwa lista osob ktore nas wyzywaja !
+
+2. wybór przeciwnika - lista z przyciskiem "challange" oraz wynikami uzytkowników.
+3. limit czasu na wykonanie ruchu
+4. losowanie kto zaczyna, slabszy przeciwnik jest faworyzowany.
+5. po zakończeniu meczu wysłanie wyników na serwer
+

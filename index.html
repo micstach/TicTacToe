@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
+
+<head>
+    <link rel="stylesheet" type="text/css" href="libs/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <link rel="stylesheet" href="game-board.css">
+    
+    <script data-main="index" src="libs/require.js"></script>
+    <script src="require-config.js"></script>
+</head>
+
+<body>
+    <div class="modal fade" id="challange-question">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                   <strong id="challenge-question-challenger"></strong> is challanging you, do you accept the challenge ?
+                </div>
+                
+                <div class="modal-footer">
+                    <button id="reject-challenge" type="button" class="btn btn-default" data-dismiss="modal">Reject</button>
+                    <button id="accept-challenge" type="button" class="btn btn-primary" data-dismiss="modal">Accept</button>
+                </div>
+            </div>
+        </div>
+    </div>   
+    
+    <div class="modal fade" id="challange-accepted">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                   <strong id="challenge-accepted-opponent"></strong> has accepted your challenge !
+                </div>
+                
+                <div class="modal-footer">
+                    <button id="start-challenge" type="button" class="btn btn-default" data-dismiss="modal">Start</button>
+                </div>
+            </div>
+        </div>
+    </div>   
+    
+    <div class="modal fade" id="challange-rejected">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                   <strong id="challenge-rejected-opponent"></strong> has rejected your challenge !
+                </div>
+                
+                <div class="modal-footer">
+                    <button id="accept-challenge" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>  
+
+    <div class="modal fade" id="challenge-completed">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                   <div id="challenge-completed-winner" style="display:none"><strong id="challenge-completed-winner-name"></strong> wins the game !</div>
+                   <div id="challenge-completed-draw" style="display:none">Draw !</div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button id="challenge-completed-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>  
+    
+    <div id="player" style="display:none">
+        <span id="header-left">
+            <span><strong id="player-name"></strong></span>
+            <span id="player-winnings" class="label label-success"></span>
+            <span id="player-lost" class="label label-warning"></span>
+        </span>
+        <span id="header-right">
+            <button id="user-logoff" type="button" class="btn btn-default">Log Off</button>
+        </span>
+    </div>
+    
+    <div id="name-form">
+        <form class="form" method="post">
+            <div class="form-group">
+                <div class="form-group">
+                    <label for="nameField">Connect as:</label>
+                    <input type="text" class="form-control" id="nameField" placeholder="Enter your name" />
+                </div>
+                <button id="connect" type="submit" class="btn btn-default">Connect</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="players">
+    </div>
+    
+    <div id="game-layout" style="display:none;">
+        <div id="game-board">
+            <div id='info'>
+                <span id='userGuid' style='display:none'></span>
+                <span id='stats' style='display:none'>
+                    <span>Players count</span>
+                    <span id='playersCount'></span>
+                </span>
+                <span>
+                    <span>Player move:</span>
+                    <span><strong id='player-move'></strong></span>
+                </span>
+            </div>
+
+            <div class="row">
+                <div id="1x1" class="field"></div>
+                <div id="1x2" class="field"></div>
+                <div id="1x3" class="field"></div>
+            </div>
+            <div class="row">
+                <div id="2x1" class="field"></div>
+                <div id="2x2" class="field"></div>
+                <div id="2x3" class="field"></div>
+            </div>
+            <div class="row">
+                <div id="3x1" class="field"></div>
+                <div id="3x2" class="field"></div>
+                <div id="3x3" class="field"></div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+
+</html>

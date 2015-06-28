@@ -1,0 +1,10 @@
+{
+  "name": "tic-tac-toe",
+  "description": "game",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express.io": "x",
+    "socket.io": "x"
+  }
+}

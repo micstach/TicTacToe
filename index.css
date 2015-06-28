@@ -1,0 +1,29 @@
+body
+{
+    background-color: rgb(255, 255, 164);
+}
+
+#name-form
+{
+    width: 300px;
+    margin-top: 200px;
+    font-size: 24px;
+}
+    
+#players
+{
+    margin-top: 200px;
+    width: 300px;
+    display: none;
+}
+
+#player
+{
+    background-color:lightgreen;
+    padding: 20px;
+}
+
+#user-logoff
+{
+    float: right;
+}
