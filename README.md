@@ -1,3 +1,3 @@
 # tictactoe
 
-Websocekt tictactoe gameboard
+Simply TicTacToe game
