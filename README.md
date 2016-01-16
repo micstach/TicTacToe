@@ -1,3 +1,3 @@
 # tic tac toe
 
-Simply TicTacToe game, avalable at http://tictactoe-micstach.rhcloud.com/
+Simply TicTacToe game server is available at http://tictactoe-micstach.rhcloud.com/
