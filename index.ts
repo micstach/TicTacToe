@@ -41,6 +41,7 @@ function challangePlayer(guid: string, name:string){
     }
 }
 
+
 function connectionOpen(){
     console.log("Websocket connection established");
     
