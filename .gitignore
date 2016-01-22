@@ -1,4 +1,5 @@
 # npm packages
+.tscache
 node_modules
 game-cpu-player.js
 game-cpu-player.js.map
