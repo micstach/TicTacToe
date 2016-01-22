@@ -6,7 +6,7 @@ module.exports = function (grunt) {
                 options: {
                     module: 'amd',
                     watch: true,
-                    target: 'ES5',
+                    target: 'es5',
                     sourceMap: true
                 }
             }

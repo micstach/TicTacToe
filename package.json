@@ -4,7 +4,15 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-  	"express": "x",
-  	"websocket": "x"
+  	"bootstrap":"3.3.4",
+  	"express": "3.20.2",
+  	"fs":"0.0.2",
+  	"grunt":"0.4.5",
+  	"grunt-contrib-watch":"0.6.1",
+  	"grunt-ts":"4.0.1",
+  	"grunt-typescript":"0.6.1",
+  	"path":"0.11.14",
+  	"typescript":"1.4.1",
+  	 "websocket": "1.0.18"
   }
 }

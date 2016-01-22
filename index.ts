@@ -24,6 +24,8 @@ var challenge: GameChallenge.Challenge = null ;
 
 var connection = null ;
 
+var rejectTimeout = null ;
+
 function challangePlayer(guid: string, name:string){
     
     if (connection !== null){
@@ -40,7 +42,6 @@ function challangePlayer(guid: string, name:string){
         connection.send(JSON.stringify(payload)) ;
     }
 }
-
 
 function connectionOpen(){
     console.log("Websocket connection established");
@@ -90,6 +91,10 @@ function connectionRecieveMessage(message){
 
         $("#challenge-question-challenger").html(challenge.challenger.name);
         $("#challange-question").modal();
+        
+        rejectTimeout = setTimeout(function() {
+            $('#reject-challenge').click() ;
+            }, 30000) ;
     }
     else if (payload.type == "challenge-response")
     {
@@ -128,6 +133,7 @@ function connectionRecieveMessage(message){
         if (payload.challenge.status == "start")
         {
             challenge.update(payload.challenge);
+            challenge.gameboard.clear() ;
             
             $("#players").hide();
             $('#player-move').text(challenge.nextTurn.name) ;
@@ -260,8 +266,12 @@ function connectionRecieveMessage(message){
     }
 }
 
+
+// var webSocketServer = 'ws://localhost:8080'
+var webSocketServer = 'ws://tictactoe-micstach.rhcloud.com:8000' ;
+
 function initializeConnection(){
-    connection = new WebSocket('ws://192.168.0.103:8080'); 
+    connection = new WebSocket(webSocketServer); 
     connection.onopen = connectionOpen ;
     connection.onmessage = connectionRecieveMessage ;
 }
@@ -272,19 +282,27 @@ $(document).ready(function () {
     var width = ($(window).width() - $('#name-form').width())/2 ;
 
     $('#name-form').css('margin-left',  Math.floor(width) + 'px');
+    $('#name-form').show();
 
     $('#user-logoff').click(function(e){
+       
         $.ajax({
             url: 'logoff/' + player.guid,
-            method: 'post'
+            method: 'post',
+            statusCode: {
+                405: function() {
+                    $('#logoff-while-in-challenge').modal();
+                }
+            }
         }).done(function(e){
             
-            $('#user').hide();    
+            $('#player').hide();    
             $('#name-form').show();
             $('#players').hide();
+            $("#game-layout").hide();
             
-        }).fail(function(){
-        
+        }).fail(function(jqXHR, err, errorThrown){
+            
         });
     });
     
@@ -320,6 +338,11 @@ $(document).ready(function () {
     
     $('#accept-challenge').click(function(){
         if (challenge !== null) {
+            
+            if (rejectTimeout !== null) {
+                clearTimeout(rejectTimeout) ;
+                rejectTimeout = null ;
+            }
             challenge.status = "accepted";
             
             if (connection !== null) {
@@ -327,7 +350,7 @@ $(document).ready(function () {
                     type: "challenge-response",
                     challenge: challenge
                 }
-                
+                                
                 connection.send(JSON.stringify(payload));
             }
         }
