@@ -2,6 +2,12 @@
 node_modules
 game-cpu-player.js
 game-cpu-player.js.map
+game-board.js
+game-board.js.map
+game-challenge.js
+game-challenge.js.map
+game-player.js
+game-player.js.map
 index.js
 index.js.map
 db/users
