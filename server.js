@@ -4,7 +4,8 @@
 process.title = 'node-chat';
 
 // Port where we'll run the websocket server
-var webSocketsServerPort = 8080;
+var webSocketsServerPort = process.env.OPENSHIFT_NODEJS_PORT || 8000;
+var hostname = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
 
 // websocket and http servers
 var express = require('express') ;
@@ -24,8 +25,9 @@ var history = [ ];
 var clients = [ ] ;
 
 // loged players
-var players = [ ] ;
+var players = [] ;
 
+// websocket connection map [guid -> websocket]
 var map = [] ;
 
 var challengeMap = [] ;
@@ -46,18 +48,33 @@ function createGuid()
     });
 }
 
-function isPlayerInChallenge(guid)
+function findPlayerInChallenge(guid)
 {
     for (var challengeGuid in challengeMap)
     {
         var challenge = challengeMap[challengeGuid] ;
      
         if (challenge.challenger.guid == guid)
-            return true ;
+            return challenge ;
         if (challenge.challenged.guid == guid)
-            return true ;
+            return challenge ;
     }
     
+    return null ;
+}
+
+function isPlayerInChallenge(guid)
+{
+    return findPlayerInChallenge(guid) != null ;
+}
+
+function isPlayerLoggedIn(guid)
+{
+    for (var i=0; i<players.length; i++)
+    {
+        if (players[i].guid == guid)
+            return true ;
+    }
     return false ;
 }
 
@@ -69,21 +86,58 @@ function sendPlayersListToAll()
     }
 }
 
-function sendPlayersList(guid)
+function getPlayersList(guid)
 {
-    var _players = new Array() ;
+    // output list of players
+    var _players = [];
 
-    for (var i=0; i<players.length; i++){
-        if (players[i].guid !== guid) {
-            
-            var idx = _players.push(players[i]) - 1;
+    var playersFiles = fs.readdirSync(__dirname + '/db/users/') ;
+    
+    for (var i=0; i<playersFiles.length; i++)
+    {
+        var playerFile = playersFiles[i] ;
+        
+        console.log(playerFile) ;
+        
+        if (playerFile.indexOf('.json') > -1) 
+        {
+            var playerData = JSON.parse(fs.readFileSync(__dirname + '/db/users/' + playerFile)) ;
 
-            _players[idx].isInChallenge = isPlayerInChallenge(_players[idx].guid);
+            if (playerData.guid !== guid)
+            {
+                // sort players by winnings
+                var winnings = playerData.winnings ;
+                var idx = 0 ;
+                
+                for (var j=0; j<_players.length; j++)
+                {
+                    if (winnings >= _players[j].winnings)
+                    {
+                        idx = j ;
+                        break ;
+                    }
+                    else
+                    {
+                        idx++ ;
+                    }
+                }
+                
+                _players.splice(idx, 0, playerData) ;
+
+                _players[idx].isInChallenge = isPlayerInChallenge(playerData.guid);
+
+                _players[idx].isLoggedIn = isPlayerLoggedIn(playerData.guid) ;
+            }
         }
     }
 
+    return _players ;
+}
+
+function sendPlayersList(guid)
+{
     var playersList = {
-        players: _players,
+        players: getPlayersList(guid),
         type: "players-list"
     };
 
@@ -93,6 +147,18 @@ function sendPlayersList(guid)
 function getUserData(name)
 {
     var userPath = __dirname + '/db/users/' + name.toLowerCase() + ".json" ;
+    
+    if (!fs.existsSync(userPath)) {
+        var userObject = {
+            name: name,
+            guid: createGuid(),
+            registered: new Date().getTime(),
+            winnings: 0,
+            lost: 0,
+            draws: 0            
+        };
+        fs.writeFileSync(userPath, JSON.stringify(userObject));
+    }
 
     return JSON.parse(fs.readFileSync(userPath)) ;
 }
@@ -109,100 +175,88 @@ function updatePlayerData(userData)
     for (var i=0; i<players.length; i++) {
         if (players[i].guid === userData.guid) {
             players[i] = userData ;
-            return ;
+            return true ;
         }
-    }                    
+    }                   
+    return false ;
 }
 
 /**
  * HTTP server
  */
 var app = express()
-	.use(express.static(__dirname)) ;
-	/*
-	.use(express.bodyParser())
-	.use(express.cookieParser())
-	.use(function(req, res) {
-		res.cookie("secret", "secret-value", {expires: new Date(Date.now() + 86400000)}) ;
-		res.end(JSON.stringify(req.query) +"\n") ;
-	}) ;
-	*/
+    .use(express.static(__dirname)) ;
+    /*
+    .use(express.bodyParser())
+    .use(express.cookieParser())
+    .use(function(req, res) {
+        res.cookie("secret", "secret-value", {expires: new Date(Date.now() + 86400000)}) ;
+        res.end(JSON.stringify(req.query) +"\n") ;
+    }) ;
+    */
 
 app.get('/status', function(req, res){
     res.writeHead(200, {'Content-Type': 'application/json'});
     var responseObject = {
-        currentClients: players.length,
-        totalHistory: history.length
+        players: getPlayersList(null)
     }
     res.end(JSON.stringify(responseObject));
 }) ;
 
+app.post('/reset', function(req, res){
+    challengeMap = [] ;
+    players = [] ;
+    map = [] ;
+    res.writeHead(200);
+    res.end();
+}) ;
+
 app.post('/logoff/:guid', function(req, res){
     console.log('logoff: ' + req.params.guid) ;
-    
-    for (var i=0; i<players.length; i++){
-        if (players[i].guid == req.params.guid) {
-            players.splice(i, 1);
-            break ;
-        }
-    }
-    
+
     var result = { };
-    
-    sendPlayersListToAll() ;
-    
-    res.writeHead(200, {'Content-Type': 'application/json'});
+
+    // is player in challenge ?
+    var playerChallenge = findPlayerInChallenge(req.params.guid) ;
+        
+    if (playerChallenge != null) {
+        // return "Method Not Allowed"
+        res.writeHead(405, {'Content-Type': 'application/json'});
+    }
+    else
+    {
+        for (var i=0; i<players.length; i++){
+            if (players[i].guid == req.params.guid) {
+                players.splice(i, 1);
+                break ;
+            }
+        }
+
+        sendPlayersListToAll() ;
+        
+        // return "OK"
+        res.writeHead(200, {'Content-Type': 'application/json'});
+    }
     res.end(JSON.stringify(result));
 });
 
-app.post('/login/:name', function(req, res){
-    console.log("User login: " + req.params.name) ;
+app.post('/login/:name', function(req, res) {
+
+    var userData = getUserData(req.params.name) ;
     
-    var userPath = __dirname + '/db/users/' + req.params.name.toLowerCase() + ".json" ;
-    console.log(userPath) ;
+    var playerFound = updatePlayerData(userData) ;
     
-    if (!fs.existsSync(userPath)) {
-        var userObject = {
-            name: req.params.name,
-            guid: createGuid(),
-            registered: new Date().getTime(),
-            winnings: 0,
-            lost: 0,
-            draws: 0            
-        };
-        fs.writeFileSync(userPath, JSON.stringify(userObject));
-    }
-    var userData = fs.readFileSync(userPath) ;
-    
-    if (userData == null)
-        console.log("User file not found !") ;
-    
-    var loggedUser = JSON.parse(userData) ;
-    var addClient = true ;
-    for (var i=0; i<players.length; i++)
-    {
-        if (players[i].guid === loggedUser.guid) {
-            
-            // update players data
-            players[i] = loggedUser ;
-            
-            // do not add it
-            addClient = false ;
-        }
-    }
-    
-    if (addClient)
-        players.push(loggedUser) ;
+    if (!playerFound)
+        players.push(userData) ;
     
     res.writeHead(200, {'Content-Type': 'application/json'});
-    res.end(userData);
+    res.end(JSON.stringify(userData));
 });
 
 app.get('/players', function(req, res) {
     console.log('get players');
     console.log('player guid: ' + req.query.guid);
     var playerGuid = req.query.guid ;
-    
     
     var _players = new Array() ;
     
@@ -218,8 +272,9 @@ app.get('/players', function(req, res) {
 
 var server = http.createServer(app) ;
 
-server.listen(webSocketsServerPort);
-console.log((new Date()) + " Server is listening on port " + webSocketsServerPort);
+server.listen(webSocketsServerPort, hostname);
+console.log((new Date()) + "Port: " + webSocketsServerPort + ", hostname: " + hostname);
+
 
 
 /**
@@ -232,7 +287,7 @@ var wsServer = new webSocketServer({
     httpServer: server
 });
 
-console.log((new Date()) + " WebSocket server started " + webSocketsServerPort);
+console.log((new Date()) + " WebSocket server started ");
 
 // This callback function is called every time someone
 // tries to connect to the WebSocket server

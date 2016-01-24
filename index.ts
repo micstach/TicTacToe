@@ -267,7 +267,6 @@ function connectionRecieveMessage(message){
 }
 
 
-// var webSocketServer = 'ws://localhost:8080'
 var webSocketServer = 'ws://tictactoe-micstach.rhcloud.com:8000' ;
 
 function initializeConnection(){
