@@ -90,7 +90,11 @@ export class Gameboard
             this.board[i] = GameboardItem.E ;
         }
         
-        $('.field').removeClass('highlighted');
+        $('.field')
+            .removeClass('highlighted-o')
+            .removeClass('highlighted-x')
+            .removeClass('O')
+            .removeClass('X') ;
     }
     
     draw()
@@ -188,106 +192,3 @@ export class Gameboard
         this.highlightedField = data.highlightedField ;
     }
 }
-
-//var gameboard = new Gameboard() ;
-//
-//var gameId = null ;
-//var userGuid = null ;
-//var timeLimit = 5 ;
-//var timeOut = null ;
-//
-//var connection = null ;
-//
-//$(document).ready(function(){
-//
-//    // websocket connection
-//    connection = new WebSocket('ws://192.168.0.110:8080');
-//
-//    timeOut = setTimeout(timeCounter, 1000, timeLimit);
-//
-//    connection.onopen = function(){
-//        connection.send(JSON.stringify({'userGuid': userGuid})) ;
-//    };
-//    
-//    (<any>$('#tools')).hide() ;
-//    
-//    $('#replay').click(function(e){
-//        
-//        gameboard = new Gameboard() ;
-//        gameboard.draw() ;
-//                
-//        connection.send(JSON.stringify(gameboard));
-//        e.preventDefault();
-//        
-//        (<any>$('#tools')).hide() ;
-//        
-//    });
-//    
-//    
-//    
-//    $('.field').click(function(e){
-//        if (gameboard.isFinished()) return ;
-//        if (gameboard.getLastUserGuid() === userGuid) return ;
-//        if (gameboard.getBoardItem($(this).attr('id')) != GameboardItem.E) return ;
-//        
-//        gameboard.setLastUserGuid(userGuid) ;
-//        
-//        var id = $(this).attr('id');
-//        var position = id.split('x');
-//
-//        var row = parseInt(position[0]) ;
-//        var column = parseInt(position[1]) ;
-//
-//        gameboard.setBoardItem(column, row);
-//        gameboard.switchActiveItem() ;
-//        gameboard.draw();
-//
-//        connection.send(JSON.stringify(gameboard));
-//    });
-//    
-//    
-//    connection.onmessage = function (message) {
-//        // try to parse JSON message. Because we know that the server always returns
-//        // JSON this should work without any problem but we should make sure that
-//        // the massage is not chunked or otherwise damaged.
-//        
-//        try {
-//            var json = JSON.parse(message.data);
-//        
-//            if (json.playersCount !== undefined)
-//            {
-//                
-//                $('#playersCount').text(json.playersCount);    
-//            }
-//            else if (json.userGuid !== undefined)
-//            {
-//                if (userGuid == null)
-//                {
-//                    userGuid = json.userGuid ;
-//                    $('#userGuid').text(userGuid);
-//                }
-//            }
-//            else if (json.ownerGuid !== userGuid)
-//            {
-//                $('.field').removeClass('highlighted') ;
-//
-//                gameboard.setBoard(json.board) ;
-//                gameboard.setLastUserGuid(json.lastUserGuid);
-//                gameboard.setActiveItem(json.activeItem);
-//                gameboard.setWinner(json.winner);
-//                
-//                if (json.winner === GameboardItem.E)
-//                    $('#winner').html('');
-//                
-//                gameboard.draw() ;
-//
-//                if (json.winner === GameboardItem.E)
-//                    if (json.highlightedField !== null)
-//                        $('#' + json.highlightedField).addClass('highlighted'); 
-//            }
-//        
-//        } catch (e) {
-//            return;
-//        }
-//    };    
-//});

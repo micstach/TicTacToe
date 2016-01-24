@@ -1,18 +1,27 @@
 <% if (users.length === 0) { %>
-    <div style="width:200px">
-        <strong>No players availabale</strong>
+    <div>
+        <center>No players available at the moment</center>
     </div>
 <% } else { %>
     <ul class="list-group">
         <% for (var i=0; i<users.length; i++) { %>
-            <li id="<%= users[i].guid %>" class="user list-group-item" style="height: 55px">
+            <li id="<%= users[i].guid %>" class="list-group-item" style="height: 55px">
                 <span><strong><%= users[i].name %></strong></span>
                 <span class="label label-success"><%= users[i].winnings %></span>
                 <span class="label label-warning"><%= users[i].lost %></span>
-                <% if (users[i].isInChallenge == false) { %>
-                    <button type="button" style="float:right" class="btn btn-default player-challange" data-player-guid="<%= users[i].guid %>" data-player-name="<%= users[i].name %>">challenge</button>
-                <% } else { %>
+                <% if (users[i].isInChallenge == true) { %>
                     <span style="float:right">is playing...</span>
+                <% } else if (users[i].isLoggedIn == true) { %>
+                    <button 
+                        type="button" 
+                        style="float:right" 
+                        class="btn btn-default btn-sm player-challange" 
+                        data-player-guid="<%= users[i].guid %>" 
+                        data-player-name="<%= users[i].name %>">
+                        challenge
+                    </button>
+                <% } else { %>
+                    <span style="float:right"></span>
                 <% } %>
             </li>
         <% } %>
